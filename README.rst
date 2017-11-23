@@ -13,6 +13,8 @@ and Slack's Real Time Messaging API.
 Setup
 =====
 
+First, follow these instructions to be able to run the code:
+
 #. Download files from this repo
 
 #. Create a virtual environment: ``virtualenv env``
@@ -34,9 +36,16 @@ Setup
 
         source secrets.sh
 
+   Just be sure to add *secrets.sh* to your *.gitignore* file to keep your
+   secrets off the Internet!
+
 #. With your secrets sourced and your environment activated, run *queue_bot.py*
 
-#. Send queue messages!
+To integrate a custom bot with your Slack team, do the following:
+
+#. 
+
+#. In the Slack team where you want to 
 
 
 Available Commands
