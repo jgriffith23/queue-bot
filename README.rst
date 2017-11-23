@@ -37,3 +37,9 @@ Setup
 #. With your secrets sourced and your environment activated, run *queue_bot.py*
 
 #. Send queue messages!
+
+
+Available Commands
+==================
+
+[WIP]
