@@ -26,7 +26,7 @@ Setup
 
    .. parsed-literal::
 
-       export BOT_API_TOKEN="xoxb-245937039254-BP7YPA3y3fePTfOBv7qNO26z"
+       export BOT_API_TOKEN="a-really-long-thing-that-is-your-bot-token"
 
    Now, you can export your variable into the environment like this:
 
