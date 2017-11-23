@@ -43,9 +43,13 @@ First, follow these instructions to be able to run the code:
 
 To integrate a custom bot with your Slack team, do the following:
 
-#. 
+#. Log into the Slack team where you want to integrate a Queue Bot, and go to
+   "Manage Apps" from the left-hand menu. This should bring you to the browser
+   admin interface for your channel.
 
-#. In the Slack team where you want to 
+   FIXME: ADD IMAGE
+
+#. Click "Browse" in the top right.
 
 
 Available Commands
