@@ -94,7 +94,8 @@ def respond_to_message(sc, text, channel_id):
         # is *not* the user's handle).
 
         users_to_enqueue = re.findall(r"<@\w+>", text)
-        _QUEUE["users"].extend(users_to_enqueue)
+        while users_to_enqueue:
+            _QUEUE.enqueue(users_to_enqueue.pop())
 
     # A staff member should still say "on my way" before
     # dequeuing, but they can dequeue instead of manually re-typing
