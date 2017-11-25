@@ -1,6 +1,7 @@
 from slackclient import SlackClient
 import os, time, re, random
 
+
 # Todo: use an actual queue data structure, built on a linked list
 _QUEUE = []
 
@@ -61,17 +62,17 @@ EMOJIS = [
 ]
 
 
-def run_bot_update_queue(sc):
+def run_bot_update_queue(sc, channel_name):
     """Check latest messages constantly and update queue."""
 
-    help_channel = sc.server.channels.find("help")
-    help_channel_id = help_channel.id
-
-    # Read messages forever!
+    # Set the channel to send messages to, based on name passed
+    channel_info = sc.server.channels.find(channel_name)
+    channel_id = channel_info.id
 
     # TODO: Add whitelist of users who are allowed to interact with queue bot
     # to make sure staff are the only ones who can manage the queue.
 
+    # Read messages forever!
     while True:
         latest = sc.rtm_read()
 
@@ -83,7 +84,7 @@ def run_bot_update_queue(sc):
             latest = latest[0]
 
             # Make sure we're in the help channel.
-            if (latest.get("channel") == help_channel_id and
+            if (latest.get("channel") == channel_id and
                 latest.get("type") == "message"):
 
                 # Was the latest update posted by a user, and was it in fact
@@ -92,7 +93,7 @@ def run_bot_update_queue(sc):
                     text = latest["text"]
                     print "Latest:", latest
 
-                    respond_to_message(sc, text, help_channel_id)
+                    respond_to_message(sc, text, channel_id)
 
                 time.sleep(.5)
 
@@ -161,6 +162,6 @@ if __name__ == "__main__":
 
     # Try to connect to the real time messaging service
     if sc.rtm_connect():
-        run_bot_update_queue(sc)
+        run_bot_update_queue(sc, "help")
     else:
         print "Connection Failed"

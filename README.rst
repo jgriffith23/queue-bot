@@ -116,6 +116,9 @@ up a user queue. I've currently implemented four commands.
 The following list shows the text you'd type in your Slack channel for each
 command, followed by a brief description.
 
+- ``queue.open()``: Tell folks that your user queue is ready to be used. Set it
+  to empty to start.
+
 - ``queue = []`` (or several other variations; see *queue_bot.py*): Empty the
   queue and show an emoji in their place to celebrate.
 
