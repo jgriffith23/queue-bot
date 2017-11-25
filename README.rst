@@ -30,13 +30,21 @@ integrate a custom bot with your Slack team, do the following:
 
 #. Click the "Browse" button.
 
+   .. image:: https://github.com/jgriffith23/queue-bot/blob/master/images/browse_apps.png?raw=true
+
 #. Use the search bar to find the Bots app. Select it.
+
+   .. image:: https://github.com/jgriffith23/queue-bot/blob/master/images/find_bots_app.png?raw=true
 
 #. Click the "Add Configuration" button and follow the setup only prompt:
    pick a username for your bot.
+   
+   .. image:: https://github.com/jgriffith23/queue-bot/blob/master/images/on_bots_page.png?raw=true
 
 #. You should be sent to a page where you can customize your bot settings and
-   view your API token.
+   view your API token. Yours should be something other than a blurry blob.
+   
+   .. image:: https://github.com/jgriffith23/queue-bot/blob/master/images/bots_config_page.png?raw=true
 
 #. Make any customizations you want to make, save your integration, and head 
    back to Slack. Keep the bot integration page open.
