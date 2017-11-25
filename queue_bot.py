@@ -103,7 +103,11 @@ def respond_to_message(sc, text, channel_id):
 
     # If someone indicated the queue should be empty, then empty it.
     if text in QUEUE_EMPTY_MESSAGES:
-        _QUEUE = []
+
+        # We have to delete the slice here to edit _QUEUE in place and avoid
+        # an UnboundLocalError. It seems binding to [] overwrites the _QUEUE
+        # from the global scope.
+        del _QUEUE[:]
         sc.rtm_send_message(channel_id, generate_queue_display())
 
     # Add a new student to the queue. Staff should still have to do
