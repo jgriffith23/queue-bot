@@ -109,8 +109,11 @@ def respond_to_message(sc, text, channel_id):
     # Add a new student to the queue. Staff should still have to do
     # this manually.
     elif "queue.enqueue" in text.lower():
+
+        # Use regex to find all user handles in the message, using Slack's
+        # standard format for referring to users: <@the-user's-id> (the id
+        # is *not* the user's handle).
         users_to_enqueue = re.findall(r"<@\w+>", text)
-        print users_to_enqueue
 
         _QUEUE.extend(users_to_enqueue)
 
