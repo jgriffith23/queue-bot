@@ -9,27 +9,6 @@ from slackqueue import SlackQueue
 
 _QUEUE = SlackQueue()
 
-QUEUE_EMPTY_MESSAGES = {
-    "QUEUE = []",
-    "QUEUE =  [ ]",
-    "QUEUE=[]",
-    "QUEUE=[ ]",
-    "QUEUE = [ ]",
-    "queue = []",
-    "queue= []",
-    "queue =[]",
-    "queue =  []",
-    "queue=[ ]",
-    "queue = [ ]",
-    "queue =[ ]",
-    "queue= [ ]",
-    "QUEUE.open()",
-    "QUEUE.open( )",
-    "queue.open()",
-    "queue.open( )",
-}
-
-
 def run_bot_update_queue(sc, channel_name):
     """Check latest messages constantly and update queue."""
 
@@ -61,63 +40,74 @@ def run_bot_update_queue(sc, channel_name):
                 print "Latest:", latest
 
                 if "queue.open()" in text.lower():
-                    _QUEUE.open = True
+                    _QUEUE.is_open = True
+                    sc.rtm_send_message(
+                        channel_id,
+                        _QUEUE.generate_display()
+                    )
+                    continue
 
                 elif "queue.close()" in text.lower():
+                    _QUEUE.is_open = False
                     while not _QUEUE.is_empty():
                         _QUEUE.dequeue()
 
-                    _QUEUE.open = False
+                    sc.rtm_send_message(
+                        channel_id,
+                        "The queue is closed. Please hop in later if you need to!"
+                    )
+                    continue
 
-                if _QUEUE.open:
-                    respond_to_message(sc, text, channel_id)
+                if _QUEUE.is_open:
+                    _QUEUE.update(text)
+
+                    if _QUEUE.has_changed:
+                        sc.rtm_send_message(
+                            channel_id,
+                            _QUEUE.generate_display()
+                        )
 
                 time.sleep(.5)
 
 
-def respond_to_message(sc, text, channel_id):
-    """Given a Slack client and text, decide how to respond to the message."""
+# def update(sc, text, channel_id):
+#     """Given a Slack client and text, decide how to respond to the message."""
 
-    # If someone indicated the queue should be empty, then empty it.
-    # FIXME: refactor to use .lower(). This means updating the list of empty
-    # messages, too.
-    if text in QUEUE_EMPTY_MESSAGES:
-        while not _QUEUE.is_empty():
-            _QUEUE.dequeue()
+#     # If someone indicated the queue should be empty, then empty it.
+#     # FIXME: refactor to use .lower(). This means updating the list of empty
+#     # messages, too.
+#     if text in QUEUE_EMPTY_MESSAGES:
+#         while not _QUEUE.is_empty():
+#             _QUEUE.dequeue()
 
-    # Add a new student to the queue. Staff should still have to do
-    # this manually.
-    elif "queue.enqueue" in text.lower():
+#     # Add a new student to the queue. Staff should still have to do
+#     # this manually.
+#     elif "queue.enqueue" in text.lower():
 
-        # Use regex to find all user handles in the message, using Slack's
-        # standard format for referring to users: <@the-user's-id> (the id
-        # is *not* the user's handle).
+#         # Use regex to find all user handles in the message, using Slack's
+#         # standard format for referring to users: <@the-user's-id> (the id
+#         # is *not* the user's handle).
 
-        users_to_enqueue = re.findall(r"<@\w+>", text)
-        while users_to_enqueue:
-            _QUEUE.enqueue(users_to_enqueue.pop())
+#         users_to_enqueue = re.findall(r"<@\w+>", text)
+#         while users_to_enqueue:
+#             _QUEUE.enqueue(users_to_enqueue.pop())
 
-    # A staff member should still say "on my way" before
-    # dequeuing, but they can dequeue instead of manually re-typing
-    # the whole queue.
+#     # A staff member should still say "on my way" before
+#     # dequeuing, but they can dequeue instead of manually re-typing
+#     # the whole queue.
 
-    elif "queue.dequeue" in text.lower():
-        _QUEUE.dequeue()
+#     elif "queue.dequeue" in text.lower():
+#         _QUEUE.dequeue()
 
-    # A user could be allowed to remove themselves.
-    elif "queue.remove" in text.lower():
-        user_to_remove = re.search(r"<@\w+>", text).group()
-        _QUEUE.remove(user_to_remove)
+#     # A user could be allowed to remove themselves.
+#     elif "queue.remove" in text.lower():
+#         user_to_remove = re.search(r"<@\w+>", text).group()
+#         _QUEUE.remove(user_to_remove)
 
-    # FIXME: Need to stop bot from posting every time a message is sent.
-    # Perhaps map commands to function identfiers in a dictionary, check if
-    # command in dict, call appropriate function if so, and then send message
-    # inside if block?
-
-    sc.rtm_send_message(
-        channel_id,
-        _QUEUE.generate_display()
-    )
+#     # FIXME: Need to stop bot from posting every time a message is sent.
+#     # Perhaps map commands to function identfiers in a dictionary, check if
+#     # command in dict, call appropriate function if so, and then send message
+#     # inside if block?
 
 
 if __name__ == "__main__":
