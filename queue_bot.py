@@ -102,12 +102,12 @@ def respond_to_message(sc, text, channel_id):
     # the whole queue.
 
     elif "queue.dequeue" in text.lower():
-        _QUEUE["users"].pop(0)
+        _QUEUE.dequeue()
 
     # A user could be allowed to remove themselves.
     elif "queue.remove" in text.lower():
         user_to_remove = re.search(r"<@\w+>", text).group()
-        _QUEUE["users"].remove(user_to_remove)
+        _QUEUE.remove(user_to_remove)
 
     # FIXME: Need to stop bot from posting every time a message is sent.
     # Perhaps map commands to function identfiers in a dictionary, check if
