@@ -3,7 +3,10 @@ import os, time, re, random
 
 
 # Todo: use an actual queue data structure, built on a linked list
-_QUEUE = []
+# SERIOUSLY DO THIS. Don't use a dictionary forever; that's gross. The
+# list is also inefficient.
+
+_QUEUE = {"users": [], "open": False}
 
 QUEUE_EMPTY_MESSAGES = {
     "QUEUE = []",
@@ -74,6 +77,7 @@ def run_bot_update_queue(sc, channel_name):
 
     # Read messages forever!
     while True:
+
         latest = sc.rtm_read()
 
         # Are there any new messages, and are they not the stock bot connection
@@ -83,16 +87,24 @@ def run_bot_update_queue(sc, channel_name):
 
             latest = latest[0]
 
-            # Make sure we're in the help channel.
+            # Make sure we're in the desired channel and the latest update
+            # was actually a message, not a typing notification.
             if (latest.get("channel") == channel_id and
                 latest.get("type") == "message"):
 
-                # Was the latest update posted by a user, and was it in fact
-                # a message?
-                if latest.get("user"):
-                    text = latest["text"]
-                    print "Latest:", latest
+                text = latest["text"]
+                print "Latest:", latest
 
+                if "queue.open()" in text.lower():
+                    _QUEUE["open"] = True
+
+                elif "queue.close()" in text.lower():
+                    del _QUEUE["users"][:]
+                    _QUEUE["open"] = False
+
+                print _QUEUE["open"]
+
+                if _QUEUE["open"]:
                     respond_to_message(sc, text, channel_id)
 
                 time.sleep(.5)
@@ -102,13 +114,15 @@ def respond_to_message(sc, text, channel_id):
     """Given a Slack client and text, decide how to respond to the message."""
 
     # If someone indicated the queue should be empty, then empty it.
+    # FIXME: refactor to use .lower(). This means updating the list of empty
+    # messages, too.
     if text in QUEUE_EMPTY_MESSAGES:
 
         # We have to delete the slice here to edit _QUEUE in place and avoid
         # an UnboundLocalError. It seems binding to [] overwrites the _QUEUE
         # from the global scope.
-        del _QUEUE[:]
-        sc.rtm_send_message(channel_id, generate_queue_display())
+
+        del _QUEUE["users"][:]
 
     # Add a new student to the queue. Staff should still have to do
     # this manually.
@@ -117,36 +131,31 @@ def respond_to_message(sc, text, channel_id):
         # Use regex to find all user handles in the message, using Slack's
         # standard format for referring to users: <@the-user's-id> (the id
         # is *not* the user's handle).
+
         users_to_enqueue = re.findall(r"<@\w+>", text)
-
-        _QUEUE.extend(users_to_enqueue)
-
-        sc.rtm_send_message(
-            channel_id,
-            generate_queue_display()
-        )
+        _QUEUE["users"].extend(users_to_enqueue)
 
     # A staff member should still say "on my way" before
     # dequeuing, but they can dequeue instead of manually re-typing
     # the whole queue.
 
     elif "queue.dequeue" in text.lower():
-        _QUEUE.pop(0)
-
-        sc.rtm_send_message(
-            channel_id,
-            generate_queue_display()
-        )
+        _QUEUE["users"].pop(0)
 
     # A user could be allowed to remove themselves.
     elif "queue.remove" in text.lower():
         user_to_remove = re.search(r"<@\w+>", text).group()
-        _QUEUE.remove(user_to_remove)
+        _QUEUE["users"].remove(user_to_remove)
 
-        sc.rtm_send_message(
-            channel_id,
-            generate_queue_display()
-        )
+    # FIXME: Need to stop bot from posting every time a message is sent.
+    # Perhaps map commands to function identfiers in a dictionary, check if
+    # command in dict, call appropriate function if so, and then send message
+    # inside if block?
+
+    sc.rtm_send_message(
+        channel_id,
+        generate_queue_display()
+    )
 
 # FIXME: Subclass a queue class for _QUEUE and make this its __repr__ or __str__.
 def generate_queue_display():
@@ -155,8 +164,8 @@ def generate_queue_display():
     queue_template = "QUEUE = [{}]"
 
     # Check whether we should display students or silliness in QUEUE
-    if _QUEUE != []:
-        queue_display = queue_template.format(" ".join(_QUEUE))
+    if _QUEUE["users"] != []:
+        queue_display = queue_template.format(" ".join(_QUEUE["users"]))
 
     else:
         queue_display = queue_template.format(random.choice(EMOJIS))
