@@ -1,12 +1,13 @@
 from slackclient import SlackClient
 import os, time, re, random
+from slackqueue import SlackQueue
 
 
 # Todo: use an actual queue data structure, built on a linked list
 # SERIOUSLY DO THIS. Don't use a dictionary forever; that's gross. The
 # list is also inefficient.
 
-_QUEUE = {"users": [], "open": False}
+_QUEUE = SlackQueue()
 
 QUEUE_EMPTY_MESSAGES = {
     "QUEUE = []",
@@ -27,42 +28,6 @@ QUEUE_EMPTY_MESSAGES = {
     "queue.open()",
     "queue.open( )",
 }
-
-EMOJIS = [
-    ":unicorn_face:",
-    ":robot_face:",
-    ":stuck_out_tongue_closed_eyes:",
-    ":whale:",
-    ":octopus:",
-    ":earth_americas:",
-    ":open_book:",
-    ":deciduous_tree:",
-    ":sign_of_the_horns:",
-    ":blowfish:",
-    ":frog:",
-    ":hatched_chick:",
-    ":floppy_disk:",
-    ":truck:",
-    ":balloon:",
-    ":birthday:",
-    ":dancers:",
-    ":bento:",
-    ":guitar:",
-    ":airplane_departure:",
-    ":grey_question:",
-    ":world_map:",
-    ":lion_face:",
-    ":dog:",
-    ":sunflower:",
-    ":elephant:",
-    ":poodle:",
-    ":spider_web:",
-    ":white_circle:",
-    ":paw_prints:",
-    ":fire:",
-    ":two_women_holding_hands:",
-    ":lion_face:",
-]
 
 
 def run_bot_update_queue(sc, channel_name):
@@ -96,15 +61,15 @@ def run_bot_update_queue(sc, channel_name):
                 print "Latest:", latest
 
                 if "queue.open()" in text.lower():
-                    _QUEUE["open"] = True
+                    _QUEUE.open = True
 
                 elif "queue.close()" in text.lower():
-                    del _QUEUE["users"][:]
-                    _QUEUE["open"] = False
+                    while not _QUEUE.is_empty():
+                        _QUEUE.dequeue()
 
-                print _QUEUE["open"]
+                    _QUEUE.open = False
 
-                if _QUEUE["open"]:
+                if _QUEUE.open:
                     respond_to_message(sc, text, channel_id)
 
                 time.sleep(.5)
@@ -117,12 +82,8 @@ def respond_to_message(sc, text, channel_id):
     # FIXME: refactor to use .lower(). This means updating the list of empty
     # messages, too.
     if text in QUEUE_EMPTY_MESSAGES:
-
-        # We have to delete the slice here to edit _QUEUE in place and avoid
-        # an UnboundLocalError. It seems binding to [] overwrites the _QUEUE
-        # from the global scope.
-
-        del _QUEUE["users"][:]
+        while not _QUEUE.is_empty():
+            _QUEUE.dequeue()
 
     # Add a new student to the queue. Staff should still have to do
     # this manually.
@@ -154,23 +115,8 @@ def respond_to_message(sc, text, channel_id):
 
     sc.rtm_send_message(
         channel_id,
-        generate_queue_display()
+        _QUEUE.generate_display()
     )
-
-# FIXME: Subclass a queue class for _QUEUE and make this its __repr__ or __str__.
-def generate_queue_display():
-    """Decide what to show for the queue."""
-
-    queue_template = "QUEUE = [{}]"
-
-    # Check whether we should display students or silliness in QUEUE
-    if _QUEUE["users"] != []:
-        queue_display = queue_template.format(" ".join(_QUEUE["users"]))
-
-    else:
-        queue_display = queue_template.format(random.choice(EMOJIS))
-
-    return queue_display
 
 
 if __name__ == "__main__":
