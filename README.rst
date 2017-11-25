@@ -26,7 +26,7 @@ integrate a custom bot with your Slack team, do the following:
    "Manage Apps" from the left-hand menu. This should bring you to the browser
    admin interface for your channel.
 
-   FIXME: ADD IMAGE
+   .. image:: https://github.com/jgriffith23/queue-bot/blob/master/images/manage_apps.png?raw=true
 
 #. Click the "Browse" button.
 
