@@ -140,3 +140,25 @@ command, followed by a brief description.
   they are positioned, and display the queue's current contents.
 
 That's it! Hope you enjoy your new Slack-based user queue assistant. 
+
+
+Helpful Resources
+=================
+
+I found these links helpful in building Queue Bot:
+
+- `Real Time Messaging API docs main page <https://api.slack.com/rtm>`_
+
+- `Formatting messages <https://api.slack.com/docs/message-formatting>`_
+
+- `Regex 101 <https://regex101.com/>`_ (for testing my user-grabbing regex)
+
+- `Slack's Python onboarding tutorial 
+  <https://github.com/slackapi/Slack-Python-Onboarding-Tutorial>`_
+
+- `Source code for the slackclient Python module
+  <https://github.com/slackapi/python-slackclient>`_
+
+- `Docs for the slackclient module 
+  <http://slackapi.github.io/python-slackclient/>`_ (Super helpful Python
+  example code here!)
