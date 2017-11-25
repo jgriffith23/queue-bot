@@ -101,11 +101,10 @@ def run_bot_update_queue(sc, channel_name):
 def respond_to_message(sc, text, channel_id):
     """Given a Slack client and text, decide how to respond to the message."""
 
-    # Did someone indicate the queue should be empty?
+    # If someone indicated the queue should be empty, then empty it.
     if text in QUEUE_EMPTY_MESSAGES:
-        message = "QUEUE = [{}]".format(random.choice(EMOJIS))
-        print message
-        sc.rtm_send_message(channel_id, message)
+        _QUEUE = []
+        sc.rtm_send_message(channel_id, generate_queue_display())
 
     # Add a new student to the queue. Staff should still have to do
     # this manually.
@@ -120,7 +119,7 @@ def respond_to_message(sc, text, channel_id):
 
         sc.rtm_send_message(
             channel_id,
-            "QUEUE = [{}]".format(" ".join(_QUEUE))
+            generate_queue_display()
         )
 
     # A staff member should still say "on my way" before
@@ -130,16 +129,9 @@ def respond_to_message(sc, text, channel_id):
     elif "queue.dequeue" in text.lower():
         _QUEUE.pop(0)
 
-        # Check whether we should display students or silliness in QUEUE
-        if _QUEUE != []:
-            current_queue = " ".join(_QUEUE)
-
-        else:
-            current_queue = random.choice(EMOJIS)
-
         sc.rtm_send_message(
             channel_id,
-            "QUEUE = [{}]".format(current_queue)
+            generate_queue_display()
         )
 
     # A user could be allowed to remove themselves.
@@ -149,8 +141,23 @@ def respond_to_message(sc, text, channel_id):
 
         sc.rtm_send_message(
             channel_id,
-            "QUEUE = [{}]".format(" ".join(_QUEUE))
+            generate_queue_display()
         )
+
+# FIXME: Subclass a queue class for _QUEUE and make this its __repr__ or __str__.
+def generate_queue_display():
+    """Decide what to show for the queue."""
+
+    queue_template = "QUEUE = [{}]"
+
+    # Check whether we should display students or silliness in QUEUE
+    if _QUEUE != []:
+        queue_display = queue_template.format(" ".join(_QUEUE))
+
+    else:
+        queue_display = queue_template.format(random.choice(EMOJIS))
+
+    return queue_display
 
 
 if __name__ == "__main__":
