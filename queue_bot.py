@@ -39,33 +39,38 @@ def run_bot_update_queue(sc, channel_name):
                 text = latest["text"]
                 print "Latest:", latest
 
-                if "queue.open()" in text.lower():
-                    _QUEUE.is_open = True
-                    sc.rtm_send_message(
-                        channel_id,
-                        _QUEUE.generate_display()
-                    )
-                    continue
+                _QUEUE.update(text)
+                # sc.rtm_send_message(
+                #         channel_id,
+                #         _QUEUE.generate_display()
+                # )
 
-                elif "queue.close()" in text.lower():
-                    _QUEUE.is_open = False
-                    while not _QUEUE.is_empty():
-                        _QUEUE.dequeue()
+                # if "queue.open()" in text.lower():
+                #     _QUEUE.is_open = True
+                #     sc.rtm_send_message(
+                #         channel_id,
+                #         _QUEUE.generate_display()
+                #     )
+                #     continue
 
-                    sc.rtm_send_message(
-                        channel_id,
-                        "The queue is closed. Please hop in later if you need to!"
-                    )
-                    continue
+                # elif "queue.close()" in text.lower():
+                #     _QUEUE.is_open = False
+                #     while not _QUEUE.is_empty():
+                #         _QUEUE.dequeue()
 
-                if _QUEUE.is_open:
-                    _QUEUE.update(text)
+                #     sc.rtm_send_message(
+                #         channel_id,
+                #         "The queue is closed. Please hop in later if you need to!"
+                #     )
+                #     continue
 
-                    if _QUEUE.has_changed:
-                        sc.rtm_send_message(
-                            channel_id,
-                            _QUEUE.generate_display()
-                        )
+                # if _QUEUE.is_open and _QUEUE.has_changed():
+                sc.rtm_send_message(
+                    channel_id,
+                    _QUEUE.generate_display()
+                )
+
+                # else:
 
                 time.sleep(.5)
 

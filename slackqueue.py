@@ -65,8 +65,11 @@ class SlackQueue(Queue):
 
         queue_template = "QUEUE = [{}]"
 
+        if not self.is_open:
+            queue_display = "The queue is closed. Please hop in again later!"
+
         # Check whether we should display students or silliness in QUEUE
-        if not self.is_empty():
+        elif not self.is_empty():
             queue_as_list = []
             current = self.items.head
 
@@ -119,6 +122,17 @@ class SlackQueue(Queue):
             self.items.remove(user_to_remove)
 
             self.has_changed = True
+
+        elif "queue.open" in text.lower():
+            self.is_open = True
+            self.has_changed = True
+
+        elif "queue.close" in text.lower():
+            self.is_open = False
+            self.has_changed = True
+
+            while not self.is_empty():
+                self.dequeue()
 
         # If we didn't get a valid command, then we haven't changed anything.
         else:
