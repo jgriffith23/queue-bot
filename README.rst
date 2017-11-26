@@ -9,6 +9,11 @@ Queue Bot
 Queue Bot was designed to manage Slack-based help queues. Built with Python 2.7
 and Slack's Real Time Messaging API.
 
+The bot tracks which users are currently enqueued with a queue data structure 
+built on top of a linked list. Each node in the linked list represents a user 
+in the queue, and it contains that user's handle, formatted according to 
+Slack's rules for @username posting.
+
 
 Setup
 =====
