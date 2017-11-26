@@ -127,6 +127,9 @@ command, followed by a brief description.
 - ``queue.open()``: Tell folks that your user queue is ready to be used. Set it
   to empty to start.
 
+- ``queue.close()``: Empty all users from the queue and ask them to enqueue
+  when it's open again.
+
 - ``queue = []`` (or several other variations; see *queue_bot.py*): Empty the
   queue and show an emoji in their place to celebrate.
 
@@ -138,6 +141,18 @@ command, followed by a brief description.
 
 - ``queue.remove(@username)``: Remove the given user from the queue, wherever
   they are positioned, and display the queue's current contents.
+
+Future features that I'd like to implement include: 
+
+- A ``queue.freeze()`` command to keep users in the queue but not allow more 
+  to be added 
+
+- The ability for the queue to automatically close itself or freeze at a certain
+  time, if it's known the queue needs to close then
+
+- "Staff only" users: get the user ids of particular users so that only they can
+  use queue commands *(Note to self: try using ``sc.server.users.find('foo').id``
+  to get particular users' ids for the staff list.)*
 
 That's it! Hope you enjoy your new Slack-based user queue assistant. 
 
