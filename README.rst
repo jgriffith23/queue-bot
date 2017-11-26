@@ -151,8 +151,10 @@ Future features that I'd like to implement include:
   time, if it's known the queue needs to close then
 
 - "Staff only" users: get the user ids of particular users so that only they can
-  use queue commands *(Note to self: try using ``sc.server.users.find('foo').id``
-  to get particular users' ids for the staff list.)*
+  use queue commands 
+
+  (Note to self: try using ``sc.server.users.find('foo').id``
+  to get particular users' ids for the staff list.)
 
 That's it! Hope you enjoy your new Slack-based user queue assistant. 
 
