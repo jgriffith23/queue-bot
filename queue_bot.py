@@ -3,10 +3,6 @@ import os, time
 from slackqueue import SlackQueue
 
 
-# Todo: use an actual queue data structure, built on a linked list
-# SERIOUSLY DO THIS. Don't use a dictionary forever; that's gross. The
-# list is also inefficient.
-
 _QUEUE = SlackQueue()
 
 def run_bot_update_queue(sc, channel_name):
@@ -26,9 +22,7 @@ def run_bot_update_queue(sc, channel_name):
 
         # Are there any new messages, and are they not the stock bot connection
         # message?
-        if (latest != [] and
-            latest != [{'text': u'hello'}]):
-
+        if (latest != [] and latest != [{'text': u'hello'}]):
             latest = latest[0]
 
             # Make sure we're in the desired channel and the latest update
@@ -38,41 +32,15 @@ def run_bot_update_queue(sc, channel_name):
 
                 text = latest["text"]
                 print "Latest:", latest
-
                 _QUEUE.update(text)
-                # sc.rtm_send_message(
-                #         channel_id,
-                #         _QUEUE.generate_display()
-                # )
 
-                # if "queue.open()" in text.lower():
-                #     _QUEUE.is_open = True
-                #     sc.rtm_send_message(
-                #         channel_id,
-                #         _QUEUE.generate_display()
-                #     )
-                #     continue
+        if _QUEUE.has_changed:
+            sc.rtm_send_message(
+                channel_id,
+                _QUEUE.generate_display()
+            )
 
-                # elif "queue.close()" in text.lower():
-                #     _QUEUE.is_open = False
-                #     while not _QUEUE.is_empty():
-                #         _QUEUE.dequeue()
-
-                #     sc.rtm_send_message(
-                #         channel_id,
-                #         "The queue is closed. Please hop in later if you need to!"
-                #     )
-                #     continue
-
-                # if _QUEUE.is_open and _QUEUE.has_changed():
-                sc.rtm_send_message(
-                    channel_id,
-                    _QUEUE.generate_display()
-                )
-
-                # else:
-
-                time.sleep(.5)
+        time.sleep(.5)
 
 
 if __name__ == "__main__":
