@@ -1,5 +1,6 @@
 from queue_ll import Queue
-import random, re
+import random
+import re
 
 
 EMOJIS = [
@@ -43,11 +44,6 @@ class SlackQueue(Queue):
     """A queue class designed for use in Slack-based user queues."""
 
     _empty_messages = {
-            "QUEUE = []",
-            "QUEUE =  [ ]",
-            "QUEUE=[]",
-            "QUEUE=[ ]",
-            "QUEUE = [ ]",
             "queue = []",
             "queue= []",
             "queue =[]",
@@ -56,10 +52,6 @@ class SlackQueue(Queue):
             "queue = [ ]",
             "queue =[ ]",
             "queue= [ ]",
-            "QUEUE.open()",
-            "QUEUE.open( )",
-            "queue.open()",
-            "queue.open( )",
     }
 
     def __init__(self):
@@ -92,10 +84,8 @@ class SlackQueue(Queue):
     def update(self, text):
         """Update queue according to most recent command text, if valid."""
 
-        # If someone indicated the queue should be empty, then empty it.
-        # FIXME: refactor to use .lower(). This means updating the list of empty
-        # messages, too.
-        if text in SlackQueue._empty_messages:
+        # Empty the queue.
+        if text.lower() in SlackQueue._empty_messages:
             while not self.is_empty():
                 self.dequeue()
 
