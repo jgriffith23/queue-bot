@@ -33,7 +33,7 @@ class LinkedList(object):
         >>> fruits.append("eggplant")
         >>> fruits.append("fig")
 
-    I think I want to eat the apple first.
+    I think I want to eat the apple first. (Remove the head.)
 
        >>> fruits.remove("apple")
 
@@ -46,7 +46,7 @@ class LinkedList(object):
         eggplant
         fig
 
-    Now a fig.
+    Now a fig. (Remove the tail.)
 
         >>> fruits.remove("fig")
 
@@ -69,7 +69,16 @@ class LinkedList(object):
         dragonfruit
         eggplant
 
-    Let's save those for later.
+    Let's do a couple more...
+
+        >>> fruits.remove("berry")
+        >>> fruits.remove("dragonfruit")
+
+    What if there's just one fruit?
+
+        >>> fruits.remove("eggplant")
+        >>> fruits.display()
+        This linked list is empty.
     """
 
     def __init__(self):
@@ -120,37 +129,39 @@ class LinkedList(object):
         while current is not None:
 
             if current.data == data:
-                # A typical case -- removing from the middle.
 
-                if current.prev is not None and current.next is not None:
-                    current.prev.next = current.next
-                    current.next.prev = current.prev
+                # Remove the head when other nodes follow it.
+                if current is self.head and current.next is not None:
+                    self.head = self.head.next
+                    self.head.prev = None
 
-                # Removing the head.
-
-                elif current.prev is None:
-                    if current.next is None:
-                        self.head = None
-                        self.tail = None
-
-                    else:
-                        self.head = self.head.next
-                        self.head.prev = None
-
-                # Removing the tail, when it is not the head.
-
-                else:
+                # Remove the tail when other nodes preceed it.
+                elif current is self.tail and current.prev is not None:
                     current.prev.next = None
                     self.tail = current.prev
+
+                # Remove a node if it's the only one in the list.
+                elif current is self.head and current is self.tail:
+                    self.head = None
+                    self.tail = None
+
+                # Typical case: remove from middle.
+                else:
+                    current.prev.next = current.next
+                    current.next.prev = current.prev
 
             current = current.next
 
     def display(self):
-        """Blat the contents of the list to stdout."""
+        """Blat the contents of the list."""
 
-        current = self.head
+        if self.head:
+            current = self.head
 
-        while current is not None:
-            print(current.data)
+            while current is not None:
+                print(current.data)
 
-            current = current.next
+                current = current.next
+
+        else:
+            print "This linked list is empty."
