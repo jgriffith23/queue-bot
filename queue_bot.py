@@ -40,6 +40,8 @@ def run_bot_update_queue(sc, channel_name):
                 _QUEUE.generate_display()
             )
 
+            _QUEUE.has_changed = False
+
         time.sleep(.5)
 
 

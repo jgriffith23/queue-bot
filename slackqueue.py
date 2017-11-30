@@ -92,8 +92,6 @@ class SlackQueue(Queue):
             while not self.is_empty():
                 self.dequeue()
 
-            self.has_changed = True
-
         # Add a new student to the queue. Staff should still have to do
         # this manually.
         elif "queue.enqueue" in text.lower():
@@ -106,34 +104,32 @@ class SlackQueue(Queue):
             while users_to_enqueue:
                 self.enqueue(users_to_enqueue.pop())
 
-            self.has_changed = True
-
         # A staff member should still say "on my way" before
         # dequeuing, but they can dequeue instead of manually re-typing
         # the whole queue.
 
         elif "queue.dequeue" in text.lower():
             self.dequeue()
-            self.has_changed = True
 
         # A user could be allowed to remove themselves.
         elif "queue.remove" in text.lower():
             user_to_remove = re.search(r"<@\w+>", text).group()
             self.items.remove(user_to_remove)
 
-            self.has_changed = True
-
+        # Let the queue start accepting users.
         elif "queue.open" in text.lower():
             self.is_open = True
-            self.has_changed = True
 
+        # No more users can be enqueued, and the queue will be emptied.
         elif "queue.close" in text.lower():
             self.is_open = False
-            self.has_changed = True
 
             while not self.is_empty():
                 self.dequeue()
 
         # If we didn't get a valid command, then we haven't changed anything.
+        # Just return early.
         else:
-            self.has_changed = False
+            return
+
+        self.has_changed = True
