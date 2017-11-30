@@ -32,15 +32,16 @@ def run_bot_update_queue(sc, channel_name):
 
                 text = latest["text"]
                 print "Latest:", latest
+
                 _QUEUE.update(text)
 
-        if _QUEUE.has_changed:
-            sc.rtm_send_message(
-                channel_id,
-                _QUEUE.generate_display()
-            )
+            if _QUEUE.needs_message:
+                sc.rtm_send_message(
+                    channel_id,
+                    _QUEUE.generate_display()
+                )
 
-            _QUEUE.has_changed = False
+                _QUEUE.needs_message = False
 
         time.sleep(.5)
 

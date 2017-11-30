@@ -58,18 +58,17 @@ class SlackQueue(Queue):
         super(SlackQueue, self).__init__()
 
         self.is_open = False
-        self.has_changed = False
+        self.needs_message = False
+        self.frozen = False
+        self.needs_message = False
 
-    def generate_display(self):
-        """Decide what to show for the queue."""
+    def visualize_queue_state(self):
+        """Create a string representing the current queue state."""
 
         queue_template = "QUEUE = [{}]"
 
-        if not self.is_open:
-            queue_display = "The queue is closed. Please hop in again later!"
-
         # Check whether we should display students or silliness in QUEUE
-        elif not self.is_empty():
+        if not self.is_empty():
             queue_as_list = []
             current = self.items.head
 
@@ -77,10 +76,29 @@ class SlackQueue(Queue):
                 queue_as_list.append(current.data)
                 current = current.next
 
-            queue_display = queue_template.format(" ".join(queue_as_list))
+            current_state = queue_template.format(" ".join(queue_as_list))
 
         else:
-            queue_display = queue_template.format(random.choice(EMOJIS))
+            current_state = queue_template.format(random.choice(EMOJIS))
+
+        return "*Current Status*:\n{}".format(current_state)
+
+    def generate_display(self):
+        """Decide what to show for the queue."""
+
+        message = None
+
+        queue_display = self.visualize_queue_state()
+
+        if not self.is_open:
+            message = "The queue is closed. Please hop in again later!"
+
+        elif self.frozen and self.needs_message:
+            print "I am making a frozen message"
+            message = "The queue cannot currently accept more users."
+
+        if message:
+            queue_display = message + "\n" + queue_display
 
         return queue_display
 
@@ -123,13 +141,21 @@ class SlackQueue(Queue):
         # No more users can be enqueued, and the queue will be emptied.
         elif "queue.close" in text.lower():
             self.is_open = False
+            self.frozen = False
 
             while not self.is_empty():
                 self.dequeue()
+
+        elif "queue.freeze" in text.lower():
+            print "I literally just froze it"
+            self.frozen = True
+
+        elif "queue.unfreeze" in text.lower():
+            self.frozen = False
 
         # If we didn't get a valid command, then we haven't changed anything.
         # Just return early.
         else:
             return
 
-        self.has_changed = True
+        self.needs_message = True
