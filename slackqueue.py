@@ -92,7 +92,7 @@ class SlackQueue(Queue):
         if not self.is_open:
             queue_display = "The queue is closed. Please hop in again later!"
 
-        elif self.frozen and self.needs_message:
+        elif self.frozen:
             print "I am making a frozen message"
             queue_display = "The queue cannot currently be changed. \n{}".format(
                 queue_display)
