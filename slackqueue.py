@@ -90,21 +90,22 @@ class SlackQueue(Queue):
         queue_display = self.visualize_queue_state()
 
         if not self.is_open:
-            message = "The queue is closed. Please hop in again later!"
+            queue_display = "The queue is closed. Please hop in again later!"
 
         elif self.frozen and self.needs_message:
             print "I am making a frozen message"
-            message = "The queue cannot currently accept more users."
-
-        if message:
-            queue_display = message + "\n" + queue_display
+            queue_display = "The queue cannot currently be changed. \n{}".format(
+                queue_display)
 
         return queue_display
 
     def update(self, text):
         """Update queue according to most recent command text, if valid."""
 
-        if self.frozen:
+        if "queue.unfreeze" in text.lower():
+            self.frozen = False
+
+        elif self.frozen:
             return
 
         # Empty the queue.
@@ -151,9 +152,6 @@ class SlackQueue(Queue):
         elif "queue.freeze" in text.lower():
             print "I literally just froze it"
             self.frozen = True
-
-        elif "queue.unfreeze" in text.lower():
-            self.frozen = False
 
         # If we didn't get a valid command, then we haven't changed anything.
         # Just return early.
