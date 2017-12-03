@@ -60,7 +60,6 @@ class SlackQueue(Queue):
         self.is_open = False
         self.needs_message = False
         self.frozen = False
-        self.needs_message = False
 
     def visualize_queue_state(self):
         """Create a string representing the current queue state."""
@@ -105,8 +104,11 @@ class SlackQueue(Queue):
     def update(self, text):
         """Update queue according to most recent command text, if valid."""
 
+        if self.frozen:
+            return
+
         # Empty the queue.
-        if text.lower() in SlackQueue._empty_messages:
+        elif text.lower() in SlackQueue._empty_messages:
             while not self.is_empty():
                 self.dequeue()
 
