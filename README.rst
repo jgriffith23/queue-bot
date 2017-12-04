@@ -147,19 +147,27 @@ command, followed by a brief description.
 - ``queue.remove(@username)``: Remove the given user from the queue, wherever
   they are positioned, and display the queue's current contents.
 
+- ``queue.freeze()``: Don't allow other users to be added to the queue. 
+
+- ``queue.unfreeze()``: What's on the tin. Unfreeze the queue.
+
+- ``queue.status()`: Get the current status of the queue.
+
 Future features that I'd like to implement include: 
 
-- A ``queue.freeze()`` command to keep users in the queue but not allow more 
-  to be added 
+- [X] A ``queue.freeze()`` command to keep users in the queue but not allow more 
+  to be added.
 
-- The ability for the queue to automatically close itself or freeze at a certain
-  time, if it's known the queue needs to close then
+- [ ] The ability for the queue to automatically close itself or freeze at a certain
+  time, if it's known the queue needs to close then.
 
-- "Staff only" users: get the user ids of particular users so that only they can
-  use queue commands 
+- [ ] "Staff only" users: Get the user ids of particular users so that only they can
+  use queue commands.
 
   (Note to self: try using ``sc.server.users.find('foo').id``
   to get particular users' ids for the staff list.)
+
+- [ ] Allow users to be dequeued when the queue is frozen.
 
 That's it! Hope you enjoy your new Slack-based user queue assistant. 
 
