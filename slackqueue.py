@@ -102,7 +102,10 @@ class SlackQueue(Queue):
     def update(self, text):
         """Update queue according to most recent command text, if valid."""
 
-        if "queue.unfreeze" in text.lower():
+        if "queue.status" in text.lower():
+            self.needs_message = True
+
+        elif "queue.unfreeze" in text.lower():
             self.frozen = False
 
         elif self.frozen:
