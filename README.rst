@@ -151,7 +151,7 @@ command, followed by a brief description.
 
 - ``queue.unfreeze()``: What's on the tin. Unfreeze the queue.
 
-- ``queue.status()`: Get the current status of the queue.
+- `queue.status()`: Get the current status of the queue.
 
 Future features that I'd like to implement include: 
 
